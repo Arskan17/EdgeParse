@@ -67,7 +67,6 @@ Returns the edgeparse version string.
 ├── package/
 │   └── edgeparse_wasm_bg.wasm  # EdgeParse WASM binary
 ├── main.py                     # Usage example
-├── input_files/                # Sample PDFs
 ├── output_files/               # Generated output
 ├── pyproject.toml
 └── README.md
