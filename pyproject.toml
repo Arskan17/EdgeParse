@@ -1,0 +1,11 @@
+[project]
+name = "raphael-edgep"
+version = "0.3.0"
+description = "PDF-to-structured-data extraction via the edgeparse WASM engine — supports PDF, PNG, JPG input"
+readme = "README.md"
+requires-python = ">=3.11, <=3.14"
+dependencies = [
+    "img2pdf>=0.6.3",
+    "pillow>=12.0.0",
+    "wasmtime>=46.0.1",
+]
