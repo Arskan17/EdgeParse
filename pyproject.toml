@@ -1,7 +1,7 @@
 [project]
 name = "raphael-edgep"
 version = "0.3.0"
-description = "PDF-to-structured-data extraction via the edgeparse WASM engine — supports PDF, PNG, JPG input"
+description = "PDF-to-structured-data extraction via the edgeparse WASM engine — supports PDF, PNG, JPG input. It can also be used as a SKILL, or deployed as an MCP server."
 readme = "README.md"
 requires-python = ">=3.11, <=3.14"
 dependencies = [
