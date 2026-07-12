@@ -5,7 +5,9 @@ description = "PDF-to-structured-data extraction via the edgeparse WASM engine â
 readme = "README.md"
 requires-python = ">=3.11, <=3.14"
 dependencies = [
+    "httpx>=0.28.1",
     "img2pdf>=0.6.3",
+    "mcp[cli]>=1.28.1",
     "pillow>=12.0.0",
     "wasmtime>=46.0.1",
 ]

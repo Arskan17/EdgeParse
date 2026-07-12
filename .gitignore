@@ -11,5 +11,6 @@ wheels/
 
 # Lockfiles
 uv.lock
-input_files/
-output_files/
+input*/
+output*/
+resume.md

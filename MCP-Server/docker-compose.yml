@@ -1,0 +1,9 @@
+services:
+  document-parser-mcp:
+    build:
+      context: ..
+      dockerfile: MCP-Server/Dockerfile
+    ports:
+      - "6274:8000"
+    environment:
+      - TRANSPORT=streamable-http
