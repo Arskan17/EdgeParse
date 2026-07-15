@@ -9,8 +9,7 @@ wheels/
 # Virtual environments
 .venv
 
-# Lockfiles
-uv.lock
+# test and generated files
 input*/
 output*/
 resume.md
