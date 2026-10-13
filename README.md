@@ -14,7 +14,7 @@ The native `edgeparse` Python package ships a PyO3 native extension — one `.so
 ## Features
 
 - **PDF extraction** — Markdown, JSON with bounding boxes, HTML, plain text
-- **Image support** — PNG, JPG, WebP, BMP, TIFF auto-converted to PDF via `img2pdf`
+- **Image OCR** — PNG, JPG, WebP, BMP, TIFF, GIF read by a second WASM engine ([ocrs](https://github.com/robertknight/ocrs), compiled to WASI)
 - **Table clustering** — `table_method="cluster"` for borderless tables
 - **JSON normalization** — WASM output transformed to match the native `edgeparse` JSON schema
 - **CLI** — glob patterns, batch processing, `python -m edgeparse_wasm_adapter`
@@ -41,7 +41,7 @@ md = edgeparse.convert("report.pdf", format="markdown")
 # JSON with bounding boxes for RAG citations
 data = json.loads(edgeparse.convert("report.pdf", format="json"))
 
-# Image file (auto-converts to PDF via img2pdf)
+# Image file (OCR via the ocrs WASM engine)
 md = edgeparse.convert("screenshot.png", format="markdown")
 
 # Table clustering for borderless tables
@@ -61,7 +61,14 @@ path = edgeparse.convert_file("report.pdf", output_dir="output/", format="markdo
 | `reading_order`| `"xycut"`   | `"xycut"` or `"off"`                     |
 | `table_method`| `"default"`  | `"default"` or `"cluster"`               |
 
-Input can be a PDF (`.pdf`) or image (`.png`, `.jpg`, `.jpeg`, `.webp`, `.bmp`, `.tiff`, `.gif`). Images are auto-converted to PDF via `img2pdf` before extraction.
+Input can be a PDF (`.pdf`) or image (`.png`, `.jpg`, `.jpeg`, `.webp`, `.bmp`, `.tiff`, `.gif`). Images are detected by magic bytes (falling back to the extension) and run through OCR in `package/ocr_wasm.wasm` with the models in `package/models/`. JSON output for images uses the same schema, with one `paragraph` per text block, `page number` 1 and pixel bounding boxes (origin bottom-left). Font fields are empty. The bundled models cover Latin script.
+
+### Rebuilding the OCR engine
+
+```bash
+rustup target add wasm32-wasip1
+./ocr-wasm/build.sh   # builds package/ocr_wasm.wasm and fetches the models
+```
 
 ### `convert_file(input_path, output_dir, *, format, pages, password)`
 

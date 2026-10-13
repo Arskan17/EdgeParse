@@ -13,7 +13,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 with open(f"{OUTPUT_DIR}/xyz.json", "w", encoding="utf-8") as f:
     json.dump(doc, f, ensure_ascii=False, indent=2)
 
-# --- Image → PDF (auto via img2pdf) → Markdown ---
+# --- Image → OCR (WASM) → Markdown ---
 for img in [INPUT_IMG]:
     if os.path.exists(img):
         result = edgeparse.convert(img, format="markdown")
