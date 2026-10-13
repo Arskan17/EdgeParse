@@ -1,10 +1,8 @@
 import os
 import sys
-import io
 import struct
 import traceback
 import json
-import img2pdf
 import wasmtime
 from pathlib import Path
 from typing import Optional, Union
@@ -12,6 +10,22 @@ from typing import Optional, Union
 PathLike = Union[str, os.PathLike]
 
 _IMAGE_EXTS = {'.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.tif', '.webp'}
+
+_IMAGE_MAGIC = (
+    b'\x89PNG\r\n\x1a\n',  # PNG
+    b'\xff\xd8\xff',          # JPEG
+    b'GIF87a', b'GIF89a',      # GIF
+    b'BM',                     # BMP
+    b'II*\x00', b'MM\x00*',    # TIFF
+)
+
+
+def _is_image(data: bytes, ext: str) -> bool:
+    if data[:4] == b'RIFF' and data[8:12] == b'WEBP':
+        return True
+    if data.startswith(b'%PDF'):
+        return False
+    return data.startswith(_IMAGE_MAGIC) or ext in _IMAGE_EXTS
 
 class WasmContext:
     def __init__(self):
@@ -241,15 +255,14 @@ def convert(
 
     ctx.reset()
 
-    p = Path(input_path)
-    ext = p.suffix.lower()
-    if ext in _IMAGE_EXTS:
-        with open(input_path, "rb") as f:
-            image_bytes = f.read()
-        pdf_bytes = img2pdf.convert(image_bytes)
-    else:
-        with open(input_path, "rb") as f:
-            pdf_bytes = f.read()
+    with open(input_path, "rb") as f:
+        data = f.read()
+
+    if _is_image(data, Path(input_path).suffix.lower()):
+        from . import ocr
+        return ocr.render(ocr.ocr_image(data), format)
+
+    pdf_bytes = data
 
     pdf_ptr, pdf_len = pass_bytes_to_wasm(store, pdf_bytes)
     format_ptr, format_len = pass_string_to_wasm(store, format)
