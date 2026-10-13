@@ -2,23 +2,28 @@ import os
 import sys
 import tempfile
 from pathlib import Path
-
-import httpx
-from mcp.server.fastmcp import FastMCP
-from edgeparse_wasm_adapter import convert
+from urllib.parse import urlparse
 
 _project_root = Path(__file__).resolve().parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
+import httpx
+from mcp.server.fastmcp import FastMCP
+from edgeparse_wasm_adapter import convert
 
-mcp = FastMCP("document-parser")
+
+mcp = FastMCP(
+    "document-parser",
+    host=os.getenv("HOST", "0.0.0.0"),
+    port=int(os.getenv("PORT", "8000")),
+)
 
 _DOWNLOAD_TIMEOUT = 120
 
 
 def _infer_extension(url: str, content_type: str | None) -> str:
-    path = Path(url)
+    path = Path(urlparse(url).path)
     ext = path.suffix.lower()
     if ext in (".pdf", ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".tif", ".webp"):
         return ext
@@ -81,4 +86,4 @@ def extract_text(url: str, pages: str | None = None, table_method: str = "defaul
 
 
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(transport=os.getenv("TRANSPORT", "stdio"))
